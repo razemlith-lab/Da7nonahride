@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تطبيق تتبع رحلات العمل (Carpooling)</title>
+    <style>
+        :root {
+            --primary-color: #4f46e5;
+            --secondary-color: #e0e7ff;
+            --bg-color: #f8fafc;
+            --text-color: #1e293b;
+            --danger-color: #ef4444;
+            --success-color: #22c55e;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+        h1, h2 {
+            text-align: center;
+            color: var(--primary-color);
+        }
+        .section {
+            margin-bottom: 25px;
+            padding: 15px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            background: #fff;
+        }
+        form input, form button {
+            padding: 10px;
+            margin: 5px;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            font-size: 16px;
+        }
+        form input {
+            width: calc(33% - 20px);
+        }
+        button {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        button:hover {
+            background-color: #4338ca;
+        }
+        .btn-danger {
+            background-color: var(--danger-color);
+        }
+        .btn-danger:hover {
+            background-color: #dc2626;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+        th, td {
+            border: 1px solid #e2e8f0;
+            padding: 12px;
+            text-align: center;
+        }
+        th {
+            background-color: var(--secondary-color);
+            color: var(--text-color);
+        }
+        .actions-cell button {
+            padding: 6px 12px;
+            margin: 2px;
+            font-size: 14px;
+        }
+        .reset-section {
+            text-align: center;
+            margin-top: 30px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>تطبيق تتبع رحلات العمل (Carpooling)</h1>
+
+    <!-- قسم إضافة شخص جديد -->
+    <div class="section">
+        <h2>إضافة مشارك جديد</h2>
+        <form id="add-person-form">
+            <input type="text" id="person-name" placeholder="اسم الزميل" required>
+            <input type="number" id="trip-cost" placeholder="تلفة الرحلة الواحدة (د.أ)" required step="0.5">
+            <button type="submit">إضافة الشخص</button>
+        </form>
+    </div>
+
+    <!-- جدول عرض البيانات والحسابات الشهرية -->
+    <div class="section">
+        <h2>سجل الرحلات والحسابات الشهرية</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>الاسم</th>
+                    <th>تكلفة الرحلة</th>
+                    <th>عدد رحلات الذهاب</th>
+                    <th>عدد رحلات العودة</th>
+                    <th>الإجمالي المستحق</th>
+                    <th>إجراءات تسجيل الرحلات</th>
+                </tr>
+            зня>
+            <tbody id="users-table-body">
+                <!-- سيتم تعبئة البيانات ديناميكياً -->
+            </tbody>
+        </table>
+    </div>
+
+    <!-- زر تصفير الحسابات وبدء شهر جديد -->
+    <div class="reset-section">
+        <button id="reset-month-btn" class="btn-danger">إصدار الفاتورة وتصفير الشهر وبدء جديد</button>
+    </div>
+</div>
+
+<!-- كود جافاسكريبت للتشغيل وربط Firebase -->
+<script type="module">
+    // 1. ضع هنا كود إعداد الـ Firebase SDK الذي نسخته من لوحة التحكم:
+    /*
+    import { initializeApp } from "firebase/app";
+    import { getDatabase, ref, set, get, update, remove } from "firebase/database";
+
+    const firebaseConfig = {
+      apiKey: "YOUR_API_KEY",
+      authDomain: "YOUR_AUTH_DOMAIN",
+      projectId: "YOUR_PROJECT_ID",
+      storageBucket: "YOUR_STORAGE_BUCKET",
+      messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+      appId: "YOUR_APP_ID"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+    */
+
+    // ملاحظة: حالياً سنقوم بتشغيل التطبيق محلياً بالذاكرة المؤقتة (LocalStorage) 
+    // كخطوة أولى سريعة، ويمكننا ربطه بـ Firebase مباشرة عبر لصق الكود أعلاه بدلاً من localStorage.
+
+    let users = JSON.parse(localStorage.getItem('carpool_users')) || [];
+
+    const form = document.getElementById('add-person-form');
+    const tableBody = document.getElementById('users-table-body');
+    const resetBtn = document.getElementById('reset-month-btn');
+
+    function saveAndRender() {
+        localStorage.setItem('carpool_users', JSON.stringify(users));
+        renderTable();
+    }
+
+    function renderTable() {
+        tableBody.innerHTML = '';
+        if (users.length === 0) {
+            tableBody.innerHTML = `<tr><td colspan="6">لا يوجد مشاركون حالياً. قم بإضافة شخص للبدء.</td></tr>`;
+            return;
+        }
+
+        users.forEach((user, index) => {
+            const totalCost = (user.goes + user.returns) * user.cost;
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td>${user.name}</td>
+                <td>${user.cost} د.أ</td>
+                <td>
+                    ${user.goes} 
+                    <button onclick="updateCount(${index}, 'goes', 1)">+</button>
+                    <button onclick="updateCount(${index}, 'goes', -1)">-</button>
+                </td>
+                <td>
+                    ${user.returns} 
+                    <button onclick="updateCount(${index}, 'returns', 1)">+</button>
+                    <button onclick="updateCount(${index}, 'returns', -1)">-</button>
+                </td>
+                <td><strong>${totalCost} د.أ</strong></td>
+                <td class="actions-cell">
+                    <button onclick="deleteUser(${index})" class="btn-danger">حذف</button>
+                </td>
+            `;
+            tableBody.appendChild(tr);
+        });
+    }
+
+    // إضافة شخص جديد
+    form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const name = document.getElementById('person-name').value;
+        const cost = parseFloat(document.getElementById('trip-cost').value);
+
+        users.push({
+            name: name,
+            cost: cost,
+            goes: 0,
+            returns: 0
+        });
+
+        form.reset();
+        saveAndRender();
+    });
+
+    // تحديث عدد الرحلات (ذهاب أو عودة)
+    window.updateCount = function(index, type, delta) {
+        users[index][type] += delta;
+        if (users[index][type] < 0) users[index][type] = 0;
+        saveAndRender();
+    }
+
+    // حذف شخص
+    window.deleteUser = function(index) {
+        if(confirm('هل أنت متأكد من حذف هذا الزميل؟')) {
+            users.splice(index, 1);
+            saveAndRender();
+        }
+    }
+
+    // زر تصفير الشهر وبدء جديد عند إصدار الفاتورة
+    resetBtn.addEventListener('click', () => {
+        if(confirm('هل تريد حقاً إصدار الفاتورة وتصفير عداد الرحلات لبدء شهر جديد؟')) {
+            users.forEach(user => {
+                user.goes = 0;
+                user.returns = 0;
+            });
+            saveAndRender();
+            alert('تمت تصفير الرحلات بنجاح، جاهزون لشهر جديد!');
+        }
+    });
+
+    // العرض الأول عند تحميل الصفحة
+    renderTable();
+</script>
+
+</body>
+  </html>
+  
