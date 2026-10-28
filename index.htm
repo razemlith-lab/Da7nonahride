@@ -2,745 +2,449 @@
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<meta name="theme-color" content="#4f46e5">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>إدارة المواصلات الشهرية</title>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 <style>
-:root{--primary:#4f46e5;--primary-dark:#3730a3;--bg:#f4f6fb;--text:#172033;--muted:#718096;--border:#e6eaf2;--green:#0f9f6e;--red:#dc3545;--shadow:0 8px 28px rgba(25,35,70,.06)}
+:root{--p:#4f46e5;--bg:#f3f5fb;--line:#e2e6ef;--green:#087f5b;--red:#c92a2a}
 *{box-sizing:border-box}
-body{margin:0;padding:14px;background:var(--bg);font-family:system-ui,-apple-system,'Segoe UI',Tahoma,Arial,sans-serif;color:var(--text)}
-button,input,select{font:inherit}
-button{border:0;border-radius:12px;padding:11px 14px;background:var(--primary);color:#fff;font-size:14px;font-weight:700;cursor:pointer;transition:transform .15s,background .15s;touch-action:manipulation;min-height:44px}
-button:hover{background:var(--primary-dark)}
-button:active{transform:scale(.98)}
-button:disabled{opacity:.5}
-.container{max-width:900px;margin:0 auto;padding-bottom:35px}
-.hero{background:linear-gradient(135deg,#25205e,#6158ed 70%,#8b83ff);color:#fff;padding:23px;border-radius:23px;margin-bottom:14px;box-shadow:0 12px 28px #4f46e529}
-.hero h1{margin:0 0 7px;font-size:24px;letter-spacing:-.4px}
-.hero p{margin:0;color:#e7e8ff;line-height:1.7;font-size:13px}
-.section{background:#fff;border:1px solid var(--border);border-radius:18px;padding:16px;margin-bottom:13px;box-shadow:var(--shadow)}
+body{margin:0;background:var(--bg);color:#172033;font-family:Arial,Tahoma,sans-serif;padding:12px}
+main{max-width:850px;margin:auto}
+header{background:linear-gradient(135deg,#25205e,#665df0);color:white;padding:22px;border-radius:18px;margin-bottom:12px}
+header h1{margin:0 0 8px;font-size:23px}
+header p{margin:0;line-height:1.7}
+.card{background:white;border:1px solid var(--line);border-radius:15px;padding:15px;margin-bottom:12px}
 h2{font-size:17px;margin:0 0 13px}
-form,.toolbar,.inline{display:flex;gap:10px;flex-wrap:wrap;align-items:end}
-.field{display:flex;flex-direction:column;gap:6px;flex:1;min-width:150px}
-.field label{font-size:12px;color:var(--muted);font-weight:650}
-input,select{width:100%;padding:12px;border:1px solid #dce2ed;border-radius:12px;font-size:15px;background:#fff;min-height:46px;color:var(--text);outline:none}
-input:focus,select:focus{border-color:var(--primary);box-shadow:0 0 0 3px #4f46e51c}
-.secondary{background:#eef1f7;color:#344054}
-.secondary:hover{background:#e0e5ef}
-.danger{background:#fff0f0;color:#b42332}
-.danger:hover{background:#ffe0e0}
-.green{background:var(--green)}
-.green:hover{background:#087d56}
-.note{font-size:12px;color:var(--muted);line-height:1.7;margin-top:10px}
-.hidden{display:none!important}
-.month-tools{display:flex;gap:9px;align-items:end;flex-wrap:wrap}
-.month-tools .field{max-width:220px}
-.month-tools button{flex:1}
-.toolbar-title{display:flex;align-items:center;justify-content:space-between;gap:10px}
-.toolbar-title h2{margin:0}
-.stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;margin:0 0 14px}
-.stat{background:#fff;border:1px solid var(--border);border-radius:16px;padding:13px;min-width:0}
-.stat span{display:block;color:var(--muted);font-size:11px;margin-bottom:7px;line-height:1.5}
+.row{display:flex;flex-wrap:wrap;gap:9px;align-items:end}
+.field{flex:1;min-width:140px}
+label{display:block;font-size:12px;color:#667085;margin-bottom:6px}
+input,select,button{font:inherit;width:100%;padding:11px;border-radius:10px;border:1px solid #d6dbe6;min-height:43px}
+button{background:var(--p);border:0;color:white;font-weight:bold;cursor:pointer}
+button.secondary{background:#edf0f7;color:#27324a}
+button.green{background:var(--green)}
+button.red{background:#fff0f0;color:var(--red)}
+.actions{display:flex;flex-wrap:wrap;gap:7px;margin-top:10px}
+.actions button{width:auto;flex:1;min-width:105px;font-size:13px}
+.stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.stat{background:#f8f9fc;border-radius:12px;padding:12px}
+.stat span{display:block;font-size:12px;color:#667085;margin-bottom:7px}
 .stat strong{font-size:18px;overflow-wrap:anywhere}
-.person-card{background:#fff;border:1px solid var(--border);border-radius:20px;padding:14px;margin-bottom:11px;box-shadow:var(--shadow);min-width:0}
-.person-head{display:flex;align-items:center;gap:11px;min-width:0}
-.avatar{width:45px;height:45px;flex:0 0 45px;display:grid;place-items:center;border-radius:15px;background:linear-gradient(135deg,#e7eaff,#f0edff);color:#4438ca;font-size:20px;font-weight:800}
-.person-title{flex:1;min-width:0}
-.person-title h3{font-size:16px;margin:0 0 5px;overflow-wrap:anywhere}
-.schedule{font-size:11px;color:var(--muted);line-height:1.5;display:block}
-.schedule-detail{font-size:12px;color:var(--muted);background:#f8f9fc;border-radius:12px;padding:11px;margin-bottom:8px;line-height:1.8}
-.schedule-detail strong{color:var(--text)}
-.details-toggle{padding:8px 10px;min-height:38px;font-size:12px;background:#f0f2ff;color:#4338ca;white-space:nowrap}
-.details-toggle.is-open{background:#e7e9ff}
-.details-toggle span{margin-right:4px}
-.ride-actions{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:14px}
-.ride-btn{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;min-height:94px;border-radius:16px;padding:10px 8px;white-space:normal}
-.ride-btn .ride-icon{width:31px;height:31px;display:grid;place-items:center;border-radius:11px;background:#ffffff35;font-size:22px;line-height:1}
-.ride-btn span:nth-child(2){font-size:13px}
-.ride-btn small{font-size:11px;font-weight:500;opacity:.85}
-.ride-btn.go{background:#4f46e5}
-.ride-btn.go:hover{background:#4338ca}
-.ride-btn.back{background:#087f8c}
-.ride-btn.back:hover{background:#066874}
-.person-details{margin-top:13px;padding-top:13px;border-top:1px solid var(--border)}
-.detail-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
-.detail-grid>div{background:#f8f9fc;border-radius:12px;padding:11px;min-width:0}
-.detail-grid span{display:block;color:var(--muted);font-size:11px;margin-bottom:5px}
-.detail-grid strong{font-size:14px;overflow-wrap:anywhere}
-.detail-actions{display:flex;flex-wrap:wrap;gap:7px;margin-top:11px}
-.detail-actions button{font-size:12px;padding:9px 10px;min-height:40px}
-.badge{display:inline-block;border-radius:99px;padding:4px 8px;font-size:11px;background:#eef2ff;color:#3730a3;white-space:nowrap}
-.badge.due{background:#fee2e2;color:#991b1b}
-.badge.paid{background:#dcfce7;color:#166534}
-.logs{max-height:260px;overflow:auto}
-.log{padding:10px 0;border-bottom:1px solid var(--border);font-size:13px;line-height:1.7;overflow-wrap:anywhere}
-.sub{display:block;color:var(--muted);font-size:11px;margin-top:4px}
-.empty{padding:22px 12px;text-align:center;color:var(--muted);font-size:13px;line-height:1.7}
+.person{border:1px solid var(--line);border-radius:13px;padding:13px;margin-top:10px}
+.person h3{margin:0 0 7px}
+.muted{color:#667085;font-size:12px;line-height:1.7}
+table{width:100%;border-collapse:collapse;margin-top:10px}
+th,td{padding:9px 5px;border-bottom:1px solid var(--line);font-size:12px;text-align:center}
+th{background:#f5f6fa}
 .table-wrap{overflow-x:auto}
-table{width:100%;border-collapse:collapse;min-width:570px}
-th,td{padding:11px 9px;border-bottom:1px solid var(--border);text-align:center;font-size:12px}
-th{background:#f8fafc;color:#475569;white-space:nowrap}
-.positive{color:var(--green)}
-.negative{color:var(--red)}
-.panel-toggle{display:flex;align-items:center;justify-content:space-between;width:100%;background:#fff;color:var(--text);border:1px solid var(--border);box-shadow:var(--shadow);text-align:right;margin-bottom:10px;padding:14px 15px;border-radius:15px}
-.panel-toggle:hover{background:#f8f9ff;color:var(--primary-dark)}
-.panel-toggle .left{display:flex;align-items:center;gap:10px}
-.panel-icon{display:grid;place-items:center;width:36px;height:36px;border-radius:12px;background:#eef2ff;color:#4f46e5;font-size:18px}
-.panel-arrow{color:var(--muted);font-size:18px}
-.floating-add{position:fixed;bottom:18px;left:16px;z-index:20;box-shadow:0 8px 22px #4f46e54d;border-radius:999px;padding:14px 18px;min-height:54px;font-size:14px}
-.status{padding:11px;border-radius:12px;background:#ecfdf3;margin-top:10px;font-size:13px;color:#166534;line-height:1.6}
-@media(min-width:760px){
-body{padding:24px}
-.hero{padding:28px}
-.hero h1{font-size:27px}
-.stats{grid-template-columns:repeat(4,minmax(0,1fr))}
-.stat strong{font-size:20px}
-.person-card{padding:17px}
-.ride-actions{max-width:440px;margin-right:auto;margin-top:-4px}
-.detail-grid{grid-template-columns:repeat(4,minmax(0,1fr))}
-.floating-add{left:calc((100vw - min(900px,100vw - 48px))/2);bottom:24px}
-}
-@media(max-width:390px){
-body{padding:8px}
-.hero{padding:17px;border-radius:19px}
-.hero h1{font-size:20px}
-.section{padding:12px}
-.person-card{padding:11px}
-.avatar{width:40px;height:40px;flex-basis:40px;border-radius:13px}
-.person-title h3{font-size:15px}
-.details-toggle{padding:7px 8px;font-size:11px}
-.ride-btn{min-height:88px}
-.month-tools .field{max-width:none;flex-basis:100%}
-.month-tools button{min-width:calc(50% - 8px)}
-}
-@media print{
-body{background:white;padding:0}
-.no-print,.floating-add,.panel-toggle,button,form{display:none!important}
-.hidden{display:block!important}
-.section,.stat,.person-card{box-shadow:none;break-inside:avoid}
-.hero{background:white;color:#111;border:1px solid #ddd}
-.hero p{color:#333}
-}
+.hidden{display:none!important}
+.note{font-size:12px;line-height:1.7;color:#667085;margin-top:8px}
+.badge{display:inline-block;padding:4px 8px;border-radius:20px;background:#e8faf2;color:#087f5b;font-size:12px}
+.badge.due{background:#fff0f0;color:#c92a2a}
+@media(min-width:650px){.stats{grid-template-columns:repeat(4,minmax(0,1fr))}}
+@media print{body{background:white;padding:0}.no-print{display:none!important}}
 </style>
 </head>
 <body>
-<main class="container" id="invoice-content">
-<header class="hero">
+<main>
+<header>
 <h1>🚗 إدارة المواصلات الشهرية</h1>
-<p>سجّل الرحلات بلمسة واحدة، وتابع حسابات الركاب وقت ما تحتاجها.</p>
+<p>إدارة الركاب والرحلات والدفعات والفواتير الشهرية بالدينار الأردني.</p>
 </header>
 
-<section class="section no-print">
-<div class="toolbar-title">
-<h2>الشهر الحالي</h2>
-<button id="summary-toggle" class="secondary" aria-expanded="false">ملخص الحسابات</button>
-</div>
-<div class="month-tools" style="margin-top:13px">
+<section class="card no-print">
+<h2>📅 الشهر المطلوب</h2>
+<div class="row">
 <div class="field">
-<label for="month-picker">اختيار الشهر</label>
-<input id="month-picker" type="month">
+<label for="month">اختر الشهر</label>
+<input type="month" id="month">
 </div>
-<button id="next-month" class="secondary">الشهر التالي ←</button>
-<button id="export-pdf" class="green">تصدير PDF</button>
-<button id="export-data" class="secondary">نسخة احتياطية</button>
-<button id="import-data-btn" class="secondary">استيراد نسخة</button>
-<input id="import-data" type="file" accept="application/json" class="hidden">
+<button id="backup" style="flex:1">تصدير نسخة احتياطية</button>
+<button class="secondary" id="restoreBtn" style="flex:1">استيراد نسخة</button>
+<input id="restoreFile" type="file" accept=".json,application/json" class="hidden">
 </div>
-<div class="note">تغيير الشهر لا يحذف السجلات السابقة. بيانات الحسابات التفصيلية مخفية حتى تطلب عرضها.</div>
+<p class="note">تغيير الشهر يعرض حسابات ذلك الشهر. الحسابات والدفعات السابقة تبقى محفوظة.</p>
 </section>
 
-<div id="summary-panel" class="stats hidden">
-<div class="stat"><span>إجمالي قيمة الرحلات</span><strong id="stat-fees">0.00 د.أ</strong></div>
-<div class="stat"><span>المبلغ المقبوض</span><strong id="stat-paid">0.00 د.أ</strong></div>
-<div class="stat"><span>المتبقي لهذا الشهر</span><strong id="stat-current-due">0.00 د.أ</strong></div>
-<div class="stat"><span>كل الذمم غير المدفوعة</span><strong id="stat-all-due">0.00 د.أ</strong></div>
-</div>
-
-<section id="add-panel" class="section no-print hidden">
-<h2>إضافة راكب جديد</h2>
-<form id="add-person-form">
+<section class="card no-print">
+<h2>➕ إضافة راكب</h2>
+<form id="addForm">
+<div class="row">
 <div class="field">
-<label for="person-name">اسم الراكب</label>
-<input id="person-name" required maxlength="80" placeholder="مثال: أحمد">
+<label for="name">اسم الراكب</label>
+<input id="name" required maxlength="80" placeholder="اسم الراكب">
 </div>
 <div class="field">
-<label for="trip-price">سعر الرحلة الواحدة (د.أ)</label>
-<input id="trip-price" type="number" required min="0" step="0.25" placeholder="مثال: 1.50">
+<label for="price">السعر الشهري (د.أ)</label>
+<input id="price" type="number" min="0" step="0.01" required placeholder="مثال: 60">
+</div>
+</div>
+<div class="row" style="margin-top:9px">
+<div class="field">
+<label for="goTime">موعد الذهاب (اختياري)</label>
+<input id="goTime" type="time">
 </div>
 <div class="field">
-<label for="go-time">موعد الذهاب (اختياري)</label>
-<input id="go-time" type="time">
+<label for="backTime">موعد العودة (اختياري)</label>
+<input id="backTime" type="time">
 </div>
-<div class="field">
-<label for="return-time">موعد العودة (اختياري)</label>
-<input id="return-time" type="time">
 </div>
-<button type="submit">حفظ الراكب</button>
-<button type="button" id="cancel-add" class="secondary">إلغاء</button>
+<button style="margin-top:10px">حفظ الراكب</button>
 </form>
-<div class="note">تُحسب الفاتورة تلقائيًا: (الذهاب + العودة) × سعر الرحلة الواحدة.</div>
 </section>
 
-<section class="section">
-<div class="toolbar-title">
-<h2>الركاب</h2>
-<span id="people-count" class="badge">إدارة الرحلات</span>
+<section class="card">
+<h2>📊 ملخص الشهر</h2>
+<div class="stats">
+<div class="stat"><span>إجمالي الفواتير</span><strong id="total">0.00 د.أ</strong></div>
+<div class="stat"><span>المبالغ المقبوضة</span><strong id="paid">0.00 د.أ</strong></div>
+<div class="stat"><span>المتبقي للشهر</span><strong id="due">0.00 د.أ</strong></div>
+<div class="stat"><span>إجمالي الديون التاريخية</span><strong id="allDue">0.00 د.أ</strong></div>
 </div>
-<div id="people-list"></div>
 </section>
 
-<button class="panel-toggle no-print" id="payment-toggle" aria-expanded="false">
-<span class="left"><span class="panel-icon">د.أ</span><span>تسجيل دفعة مالية</span></span>
-<span class="panel-arrow">⌄</span>
-</button>
-
-<section id="payment-panel" class="section no-print hidden">
-<h2>تسجيل دفعة</h2>
-<form id="payment-form">
+<section class="card no-print">
+<h2>💵 تسجيل دفعة</h2>
+<form id="paymentForm">
+<div class="row">
 <div class="field">
-<label for="payment-person">الراكب</label>
-<select id="payment-person" required></select>
+<label for="paymentPerson">الراكب</label>
+<select id="paymentPerson" required></select>
 </div>
 <div class="field">
-<label for="payment-amount">المبلغ المدفوع (د.أ)</label>
-<input id="payment-amount" type="number" min="0.01" step="0.01" required placeholder="مثال: 40">
+<label for="paymentAmount">المبلغ المدفوع (د.أ)</label>
+<input id="paymentAmount" type="number" min="0.01" step="0.01" required>
 </div>
-<div class="field">
-<label for="payment-note">ملاحظة (اختياري)</label>
-<input id="payment-note" maxlength="150" placeholder="دفعة نقدية">
 </div>
-<button type="submit" class="green">تسجيل الدفعة</button>
+<div class="field" style="margin-top:9px">
+<label for="paymentNote">ملاحظة (اختياري)</label>
+<input id="paymentNote" placeholder="مثلاً: دفعة أولى">
+</div>
+<button class="green" style="margin-top:10px">تسجيل الدفعة</button>
 </form>
-<div id="payment-status" class="status hidden"></div>
 </section>
 
-<button class="panel-toggle no-print" id="logs-toggle" aria-expanded="false">
-<span class="left"><span class="panel-icon">☷</span><span>سجل الرحلات والدفعات</span></span>
-<span class="panel-arrow">⌄</span>
-</button>
-<section id="logs-panel" class="section hidden">
-<h2>سجل أنشطة الشهر المحدد</h2>
-<div id="activity-logs" class="logs"></div>
+<section class="card">
+<h2>👥 الركاب وحساباتهم</h2>
+<div id="people"></div>
+<div id="empty" class="note">لا يوجد ركاب حتى الآن. أضف أول راكب من النموذج أعلاه.</div>
 </section>
 
-<button class="panel-toggle no-print" id="history-toggle" aria-expanded="false">
-<span class="left"><span class="panel-icon">◷</span><span>الأرصدة والحسابات السابقة</span></span>
-<span class="panel-arrow">⌄</span>
-</button>
-<section id="history-panel" class="section hidden">
-<h2>ملخص الذمم حسب الشهر</h2>
+<section class="card">
+<h2>🗂️ سجل الحسابات الشهرية</h2>
 <div class="table-wrap">
 <table>
-<thead>
-<tr><th>الشهر</th><th>قيمة الرحلات</th><th>المقبوض</th><th>المتبقي</th><th>الحالة</th></tr>
-</thead>
-<tbody id="history-body"></tbody>
+<thead><tr><th>الشهر</th><th>الفواتير</th><th>المدفوع</th><th>المتبقي</th></tr></thead>
+<tbody id="history"></tbody>
 </table>
 </div>
-<div class="note">الدفعة تُسجل على الشهر المختار فقط. اختر الشهر الصحيح قبل تسجيل أي دفعة.</div>
+<p class="note">تظهر هنا الأشهر التي تحتوي على حسابات محفوظة.</p>
+</section>
+
+<section class="card no-print">
+<h2>🧾 سجل النشاط لهذا الشهر</h2>
+<div id="logs" class="muted">لا يوجد نشاط مسجل.</div>
 </section>
 </main>
 
-<button id="add-person-toggle" class="floating-add no-print" aria-expanded="false">＋ إضافة راكب</button>
-
 <script>
 (function(){
-'use strict';
+"use strict";
 
-const KEY='carpool_manager_v2';
+const KEY="transport_manager_data_v1";
 const $=id=>document.getElementById(id);
-const monthKey=d=>`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
-const currentMonth=monthKey(new Date());
-let selectedMonth=currentMonth;
-let expanded=new Set();
+const today=new Date();
+const monthNow= today.getFullYear()+"-"+String(today.getMonth()+1).padStart(2,"0");
+$("month").value=monthNow;
+let selectedMonth=monthNow;
 
-function load(){
- try{
-  const s=JSON.parse(localStorage.getItem(KEY));
-  if(s&&Array.isArray(s.people)&&s.accounts&&Array.isArray(s.logs))return s;
- }catch(e){}
- return {people:[],accounts:{},logs:[]};
+let state;
+try{
+  state=JSON.parse(localStorage.getItem(KEY))||{};
+}catch(e){state={};}
+if(!Array.isArray(state.people))state.people=[];
+if(!state.accounts||typeof state.accounts!=="object")state.accounts={};
+if(!Array.isArray(state.logs))state.logs=[];
+
+function money(n){return (Number(n)||0).toLocaleString("en-US",{minimumFractionDigits:2,maximumFractionDigits:2})+" د.أ";}
+function esc(s){return String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
+function makeId(){return Date.now().toString(36)+Math.random().toString(36).slice(2,9);}
+function dateNow(){
+  const d=new Date();
+  return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
+}
+function stamp(){return new Date().toLocaleString("ar-JO");}
+function save(){localStorage.setItem(KEY,JSON.stringify(state));render();}
+function account(month,id){
+  const key=month+"_"+id;
+  if(!state.accounts[key]){
+    const p=state.people.find(x=>x.id===id);
+    state.accounts[key]={
+      month,id,
+      fee:Number(p?.price)||0,
+      paid:0,
+      trips:[],
+      payments:[],
+      legacyTrips:0
+    };
+  }
+  const a=state.accounts[key];
+  if(!Array.isArray(a.trips))a.trips=[];
+  if(!Array.isArray(a.payments))a.payments=[];
+  return a;
+}
+function getCost(a){return Number(a.fee)||0;}
+function getPaid(a){return Number(a.paid)||0;}
+function addLog(text){
+  state.logs.unshift({month:selectedMonth,text,time:stamp()});
+}
+function monthAccounts(m){
+  return Object.values(state.accounts).filter(a=>a.month===m);
+}
+function sumMonth(m){
+  return monthAccounts(m).reduce((s,a)=>({
+    fee:s.fee+getCost(a),
+    paid:s.paid+getPaid(a)
+  }),{fee:0,paid:0});
 }
 
-let state=load();
-
-// توافق مع ملفات الركاب القديمة
-state.people.forEach(p=>{
- if(p.tripPrice===undefined)p.tripPrice=Number(p.monthlyFee)||0;
+$("addForm").addEventListener("submit",e=>{
+  e.preventDefault();
+  const name=$("name").value.trim();
+  const price=Number($("price").value);
+  if(!name||!Number.isFinite(price)||price<0)return;
+  const p={
+    id:makeId(),
+    name,
+    price,
+    goTime:$("goTime").value,
+    backTime:$("backTime").value,
+    createdAt:dateNow()
+  };
+  state.people.push(p);
+  account(selectedMonth,p.id);
+  addLog("تمت إضافة الراكب: "+name);
+  e.target.reset();
+  save();
 });
 
-function accountKey(m,id){return m+'|'+id;}
+$("month").addEventListener("change",()=>{
+  if($("month").value){
+    selectedMonth=$("month").value;
+    render();
+  }
+});
 
-function account(m,id,create=true){
- const k=accountKey(m,id);
- if(!state.accounts[k]&&create){
+$("paymentForm").addEventListener("submit",e=>{
+  e.preventDefault();
+  const id=$("paymentPerson").value;
+  const amount=Number($("paymentAmount").value);
   const p=state.people.find(x=>x.id===id);
-  state.accounts[k]={
-   month:m,
-   personId:id,
-   tripPrice:p?Number(p.tripPrice)||0:0,
-   fee:0,
-   paid:0,
-   goes:0,
-   returns:0,
-   payments:[]
-  };
- }
- const a=state.accounts[k]||null;
- if(a&&a.tripPrice===undefined&&a.fee===undefined){
-  const p=state.people.find(x=>x.id===id);
-  a.tripPrice=p?Number(p.tripPrice)||0:0;
- }
- return a;
+  if(!p||!Number.isFinite(amount)||amount<=0)return;
+  const a=account(selectedMonth,id);
+  a.paid=getPaid(a)+amount;
+  a.payments.push({amount,note:$("paymentNote").value.trim(),date:dateNow(),time:stamp()});
+  addLog("تم تسجيل دفعة "+money(amount)+" من "+p.name);
+  e.target.reset();
+  save();
+});
+
+$("people").addEventListener("click",e=>{
+  const b=e.target.closest("button[data-action]");
+  if(!b)return;
+  const p=state.people.find(x=>x.id===b.dataset.id);
+  if(!p)return;
+  const a=account(selectedMonth,p.id);
+  const action=b.dataset.action;
+
+  if(action==="go"||action==="back"){
+    const type=action==="go"?"ذهاب":"عودة";
+    a.trips.push({date:dateNow(),type});
+    addLog("تسجيل "+type+" للراكب "+p.name);
+    save();
+  }
+  if(action==="undo"){
+    if(!a.trips.length){alert("لا توجد رحلات مسجلة للتراجع عنها.");return;}
+    a.trips.pop();
+    addLog("تم التراجع عن آخر رحلة للراكب "+p.name);
+    save();
+  }
+  if(action==="invoice")printInvoice(p,a);
+  if(action==="fee"){
+    const v=prompt("السعر الشهري لهذا الراكب في "+selectedMonth+" (د.أ):",String(a.fee));
+    if(v===null)return;
+    const n=Number(v);
+    if(!Number.isFinite(n)||n<0){alert("أدخل مبلغاً صحيحاً.");return;}
+    a.fee=n;
+    addLog("تعديل سعر "+p.name+" لهذا الشهر إلى "+money(n));
+    save();
+  }
+  if(action==="edit"){
+    const n=prompt("اسم الراكب:",p.name);
+    if(n===null)return;
+    if(!n.trim()){alert("الاسم مطلوب.");return;}
+    const price=prompt("السعر الشهري للأشهر الجديدة (د.أ):",String(p.price));
+    if(price===null)return;
+    const v=Number(price);
+    if(!Number.isFinite(v)||v<0){alert("السعر غير صحيح.");return;}
+    p.name=n.trim();
+    p.price=v;
+    p.goTime=prompt("موعد الذهاب (مثال 07:30، أو اتركه فارغاً):",p.goTime||"")||"";
+    p.backTime=prompt("موعد العودة (مثال 16:00، أو اتركه فارغاً):",p.backTime||"")||"";
+    addLog("تم تعديل بيانات راكب.");
+    save();
+  }
+  if(action==="delete"){
+    if(!confirm("حذف "+p.name+" من قائمة الركاب؟ ستبقى حساباته التاريخية محفوظة."))return;
+    state.people=state.people.filter(x=>x.id!==p.id);
+    addLog("حذف الراكب "+p.name+" من القائمة.");
+    save();
+  }
+});
+
+function printInvoice(p,a){
+  const trips=a.trips||[];
+  const payments=a.payments||[];
+  const paid=getPaid(a);
+  const fee=getCost(a);
+  const due=fee-paid;
+  const tripRows=trips.length?trips.map((t,i)=>`
+    <tr><td>${i+1}</td><td>${esc(t.date||"غير مسجل")}</td><td>${esc(t.type)}</td></tr>
+  `).join(""):`<tr><td colspan="3">لا توجد رحلات مؤرخة مسجلة لهذا الشهر.</td></tr>`;
+  const paymentRows=payments.length?payments.map((x,i)=>`
+    <tr><td>${i+1}</td><td>${esc(x.date||"")}</td><td>${money(x.amount)}</td><td>${esc(x.note||"—")}</td></tr>
+  `).join(""):`<tr><td colspan="4">لا توجد دفعات مسجلة.</td></tr>`;
+
+  const w=window.open("","_blank");
+  if(!w){alert("المتصفح منع فتح الفاتورة. اسمح بالنوافذ المنبثقة ثم جرّب مرة أخرى.");return;}
+  w.document.open();
+  w.document.write(`<!DOCTYPE html><html lang="ar" dir="rtl"><head>
+    <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>فاتورة ${esc(p.name)} - ${esc(a.month)}</title>
+    <style>
+    body{font-family:Arial,Tahoma,sans-serif;color:#172033;margin:28px;line-height:1.6}
+    h1{font-size:23px;margin-bottom:5px}h2{font-size:17px;margin-top:25px}
+    .sub{color:#667085;font-size:13px}.box{border:1px solid #ddd;border-radius:10px;padding:15px;margin-top:18px}
+    .stats{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+    .stat{background:#f5f6fa;padding:12px;border-radius:8px}
+    .stat span{display:block;color:#667085;font-size:12px}.stat strong{font-size:17px}
+    table{width:100%;border-collapse:collapse;margin-top:10px}
+    th,td{border:1px solid #ddd;padding:9px;text-align:center;font-size:13px}
+    th{background:#f5f6fa}.actions{margin-top:20px}
+    button{border:0;padding:11px 18px;border-radius:8px;background:#4f46e5;color:white;font-weight:bold}
+    @media print{.actions{display:none}body{margin:10mm}}
+    </style></head><body>
+    <h1>🧾 فاتورة المواصلات الشهرية</h1>
+    <div class="sub">الشهر: ${esc(a.month)} | تاريخ إصدار الفاتورة: ${esc(dateNow())}</div>
+    <div class="box">
+      <strong>اسم الراكب:</strong> ${esc(p.name)}<br>
+      <strong>موعد الذهاب:</strong> ${esc(p.goTime||"غير محدد")}<br>
+      <strong>موعد العودة:</strong> ${esc(p.backTime||"غير محدد")}
+    </div>
+    <h2>ملخص الحساب</h2>
+    <div class="stats">
+      <div class="stat"><span>الرسوم الشهرية</span><strong>${money(fee)}</strong></div>
+      <div class="stat"><span>المبلغ المدفوع</span><strong>${money(paid)}</strong></div>
+      <div class="stat"><span>المتبقي</span><strong>${money(due)}</strong></div>
+      <div class="stat"><span>عدد الرحلات المسجلة</span><strong>${trips.length}</strong></div>
+    </div>
+    <h2>تفاصيل الرحلات</h2>
+    <table><thead><tr><th>#</th><th>التاريخ</th><th>نوع الرحلة</th></tr></thead><tbody>${tripRows}</tbody></table>
+    <h2>تفاصيل الدفعات</h2>
+    <table><thead><tr><th>#</th><th>التاريخ</th><th>المبلغ</th><th>ملاحظة</th></tr></thead><tbody>${paymentRows}</tbody></table>
+    <p class="sub">هذه الفاتورة تعرض معلومات هذا الراكب فقط.</p>
+    <div class="actions"><button onclick="window.print()">طباعة / حفظ PDF</button></div>
+    <script>window.onload=()=>{};<\/script>
+    </body></html>`);
+  w.document.close();
 }
 
-function money(n){
- return (Number(n)||0).toLocaleString('ar-JO',{
-  minimumFractionDigits:2,
-  maximumFractionDigits:2
- })+' د.أ';
-}
+$("backup").addEventListener("click",()=>{
+  const blob=new Blob([JSON.stringify(state,null,2)],{type:"application/json"});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement("a");
+  a.href=url;
+  a.download="transport-backup-"+dateNow()+".json";
+  a.click();
+  setTimeout(()=>URL.revokeObjectURL(url),1000);
+});
 
-function esc(s){
- return String(s??'').replace(/[&<>"']/g,c=>({
-  '&':'&amp;',
-  '<':'&lt;',
-  '>':'&gt;',
-  '"':'&quot;',
-  "'":'&#39;'
- }[c]));
-}
-
-function stamp(){
- return new Date().toLocaleString('ar-JO',{
-  dateStyle:'medium',
-  timeStyle:'short'
- });
-}
-
-function log(m,t){
- state.logs.unshift({month:m,text:t,time:stamp()});
-}
-
-function save(){
- localStorage.setItem(KEY,JSON.stringify(state));
- render();
-}
-
-function amount(a){
- if(a.tripPrice!==undefined){
-  return ((Number(a.goes)||0)+(Number(a.returns)||0))*(Number(a.tripPrice)||0);
- }
- return Number(a.fee)||0;
-}
-
-function total(m){
- let fee=0,paid=0,due=0;
- state.people.forEach(p=>{
-  const a=account(m,p.id);
-  const cost=amount(a);
-  fee+=cost;
-  paid+=Number(a.paid)||0;
-  due+=Math.max(0,cost-(Number(a.paid)||0));
- });
- return {fee,paid,due};
-}
+$("restoreBtn").addEventListener("click",()=>$("restoreFile").click());
+$("restoreFile").addEventListener("change",async e=>{
+  const file=e.target.files[0];
+  if(!file)return;
+  try{
+    const data=JSON.parse(await file.text());
+    if(!data||!Array.isArray(data.people)||!data.accounts||!Array.isArray(data.logs)){
+      throw new Error("invalid backup");
+    }
+    if(!confirm("سيتم استبدال البيانات الحالية بالنسخة المختارة. هل تريد المتابعة؟"))return;
+    state=data;
+    save();
+    alert("تم استيراد النسخة الاحتياطية.");
+  }catch(err){alert("تعذر قراءة الملف. تأكد أنه ملف نسخة احتياطية صادر من التطبيق.");}
+  finally{e.target.value="";}
+});
 
 function render(){
- $('month-picker').value=selectedMonth;
- const wrap=$('people-list');
- wrap.innerHTML='';
- $('people-count').textContent=`${state.people.length} ركاب`;
-
- if(!state.people.length){
-  wrap.innerHTML='<div class="empty">ما في ركاب لحد الآن. اضغط «إضافة راكب» للبدء.</div>';
- }
-
- state.people.forEach(p=>{
-  const a=account(selectedMonth,p.id);
-  const cost=amount(a);
-  const due=Math.max(0,cost-(Number(a.paid)||0));
-  const open=expanded.has(p.id);
-  const card=document.createElement('article');
-  card.className='person-card';
-
-  card.innerHTML=`
-   <div class="person-head">
-    <div class="avatar">${esc((p.name||'?').trim().slice(0,1))}</div>
-    <div class="person-title">
-     <h3>${esc(p.name)}</h3>
-     <span class="schedule">اضغط على التفاصيل لعرض المواعيد والحساب</span>
-    </div>
-    <button class="details-toggle ${open?'is-open':''}" data-action="details" data-id="${p.id}" aria-expanded="${open}">
-     ${open?'إخفاء التفاصيل':'التفاصيل'} <span>${open?'⌃':'⌄'}</span>
-    </button>
-   </div>
-
-   <div class="ride-actions">
-    <button class="ride-btn go" data-action="ride" data-type="goes" data-id="${p.id}">
-     <span class="ride-icon">↗</span>
-     <span>تسجيل الذهاب</span>
-     <small>اضغط للتسجيل</small>
-    </button>
-    <button class="ride-btn back" data-action="ride" data-type="returns" data-id="${p.id}">
-     <span class="ride-icon">↙</span>
-     <span>تسجيل العودة</span>
-     <small>اضغط للتسجيل</small>
-    </button>
-   </div>
-
-   <div class="person-details ${open?'':'hidden'}">
-    <div class="schedule-detail">
-     موعد الذهاب: <strong>${p.goTime?esc(p.goTime):'غير محدد'}</strong>
-     <span>•</span>
-     موعد العودة: <strong>${p.returnTime?esc(p.returnTime):'غير محدد'}</strong>
-    </div>
-
-    <div class="detail-grid">
-     <div><span>رحلات الذهاب</span><strong>${a.goes}</strong></div>
-     <div><span>رحلات العودة</span><strong>${a.returns}</strong></div>
-     <div><span>سعر الرحلة</span><strong>${money(a.tripPrice!==undefined?a.tripPrice:(p.tripPrice||0))}</strong></div>
-     <div><span>إجمالي الرحلات</span><strong>${(Number(a.goes)||0)+(Number(a.returns)||0)}</strong></div>
-     <div><span>الإجمالي المستحق</span><strong>${money(cost)}</strong></div>
-     <div><span>المدفوع</span><strong class="positive">${money(a.paid)}</strong></div>
-     <div><span>المتبقي</span><strong class="${due>0?'negative':'positive'}">${money(due)}</strong></div>
-     <div><span>حالة الحساب</span><strong><span class="badge ${due>0?'due':'paid'}">${due>0?'غير مسدد':'مسدد'}</span></strong></div>
-    </div>
-
-    <div class="detail-actions">
-     <button class="secondary" data-action="undo-ride" data-type="goes" data-id="${p.id}">تراجع عن ذهاب</button>
-     <button class="secondary" data-action="undo-ride" data-type="returns" data-id="${p.id}">تراجع عن عودة</button>
-     <button class="secondary" data-action="fee" data-id="${p.id}">تعديل سعر الرحلة لهذا الشهر</button>
-     <button class="secondary" data-action="edit" data-id="${p.id}">تعديل بيانات الراكب</button>
-     <button class="danger" data-action="delete" data-id="${p.id}">حذف الراكب</button>
-    </div>
-   </div>`;
-
-  wrap.appendChild(card);
- });
-
- const t=total(selectedMonth);
- $('stat-fees').textContent=money(t.fee);
- $('stat-paid').textContent=money(t.paid);
- $('stat-current-due').textContent=money(t.due);
-
- let all=0;
- Object.values(state.accounts).forEach(a=>{
-  all+=Math.max(0,amount(a)-(Number(a.paid)||0));
- });
- $('stat-all-due').textContent=money(all);
-
- const sel=$('payment-person');
- const old=sel.value;
- sel.innerHTML=state.people.map(p=>`<option value="${p.id}">${esc(p.name)}</option>`).join('');
- if(state.people.some(p=>p.id===old))sel.value=old;
- sel.disabled=!state.people.length;
-
- const logs=state.logs.filter(l=>l.month===selectedMonth);
- $('activity-logs').innerHTML=logs.length
-  ?logs.map(l=>`<div class="log"><div>${esc(l.text)}</div><span class="sub">${esc(l.time||'')}</span></div>`).join('')
-  :'<div class="empty">لا توجد أنشطة مسجلة لهذا الشهر.</div>';
-
- const months=new Set([currentMonth,selectedMonth]);
- Object.values(state.accounts).forEach(a=>months.add(a.month));
- state.logs.forEach(l=>months.add(l.month));
-
- $('history-body').innerHTML=[...months].sort().reverse().map(m=>{
-  const aa=Object.values(state.accounts).filter(a=>a.month===m);
-  const f=aa.reduce((s,a)=>s+amount(a),0);
-  const paid=aa.reduce((s,a)=>s+(+a.paid||0),0);
-  const d=aa.reduce((s,a)=>s+Math.max(0,amount(a)-(+a.paid||0)),0);
-
-  return `<tr>
-   <td>${esc(m)}</td>
-   <td>${money(f)}</td>
-   <td>${money(paid)}</td>
-   <td class="${d?'negative':'positive'}">${money(d)}</td>
-   <td>
-    <span class="badge ${d?'due':'paid'}">${d?'يوجد رصيد':'مسدد'}</span>
-    <button class="secondary" data-action="open-month" data-month="${m}">عرض الشهر</button>
-   </td>
-  </tr>`;
- }).join('');
-}
-
-$('add-person-form').addEventListener('submit',e=>{
- e.preventDefault();
-
- const name=$('person-name').value.trim();
- const tripPrice=Number($('trip-price').value);
-
- if(!name||!Number.isFinite(tripPrice)||tripPrice<0)return;
-
- const p={
-  id:crypto.randomUUID?crypto.randomUUID():String(Date.now())+Math.random(),
-  name,
-  tripPrice,
-  goTime:$('go-time').value,
-  returnTime:$('return-time').value
- };
-
- state.people.push(p);
- account(selectedMonth,p.id);
- log(selectedMonth,`تمت إضافة الراكب ${name} بسعر رحلة ${money(tripPrice)}.`);
- expanded.add(p.id);
- e.target.reset();
- $('add-panel').classList.add('hidden');
- $('add-person-toggle').setAttribute('aria-expanded','false');
- save();
-});
-
-$('people-list').addEventListener('click',e=>{
- const b=e.target.closest('button[data-action]');
- if(!b)return;
-
- const {action,id}=b.dataset;
-
- if(action==='open-month'){
-  selectedMonth=b.dataset.month;
-  render();
-  return;
- }
-
- const p=state.people.find(x=>x.id===id);
- if(!p)return;
-
- const a=account(selectedMonth,id);
-
- if(action==='details'){
-  expanded.has(id)?expanded.delete(id):expanded.add(id);
-  render();
- }
- else if(action==='ride'){
-  const type=b.dataset.type;
-  a[type]=(Number(a[type])||0)+1;
-  log(selectedMonth,`تم تسجيل ${type==='goes'?'رحلة ذهاب':'رحلة عودة'} للراكب ${p.name}.`);
-  save();
- }
- else if(action==='undo-ride'){
-  const type=b.dataset.type;
-  if(a[type]>0){
-   a[type]--;
-   log(selectedMonth,`تم التراجع عن ${type==='goes'?'ذهاب':'عودة'} للراكب ${p.name}.`);
-   save();
-  }
- }
- else if(action==='fee'){
-  const v=prompt(
-   `سعر الرحلة الواحدة للراكب ${p.name} في شهر ${selectedMonth} (د.أ):`,
-   String(a.tripPrice??p.tripPrice??0)
-  );
-
-  if(v===null)return;
-  const n=Number(v);
-
-  if(!Number.isFinite(n)||n<0){
-   alert('أدخل سعرًا صحيحًا.');
-   return;
-  }
-
-  a.tripPrice=n;
-  delete a.fee;
-  log(selectedMonth,`تم تعديل سعر الرحلة للراكب ${p.name} إلى ${money(n)}. سيُعاد حساب الإجمالي حسب عدد الرحلات.`);
-  save();
- }
- else if(action==='edit'){
-  const name=prompt('اسم الراكب:',p.name);
-  if(name===null)return;
-
-  if(!name.trim()){
-   alert('الاسم مطلوب.');
-   return;
-  }
-
-  const price=prompt('سعر الرحلة الواحدة للأشهر القادمة (د.أ):',String(p.tripPrice??0));
-  if(price===null)return;
-
-  const n=Number(price);
-  if(!Number.isFinite(n)||n<0){
-   alert('أدخل سعرًا صحيحًا.');
-   return;
-  }
-
-  const go=prompt('موعد الذهاب (HH:MM أو فارغ):',p.goTime||'');
-  if(go===null)return;
-
-  const ret=prompt('موعد العودة (HH:MM أو فارغ):',p.returnTime||'');
-  if(ret===null)return;
-
-  p.name=name.trim();
-  p.tripPrice=n;
-  p.goTime=go.trim();
-  p.returnTime=ret.trim();
-
-  log(selectedMonth,`تم تعديل بيانات الراكب ${p.name}. سعر الرحلة الجديد يُستخدم عند إنشاء حساب شهر جديد.`);
-  save();
- }
- else if(action==='delete'){
-  if(!confirm(`حذف ${p.name} من القائمة؟ ستبقى حساباته التاريخية محفوظة.`))return;
-
-  state.people=state.people.filter(x=>x.id!==id);
-  expanded.delete(id);
-  log(selectedMonth,`تم حذف ${p.name} من القائمة مع الاحتفاظ بسجلاته التاريخية.`);
-  save();
- }
-});
-
-$('payment-form').addEventListener('submit',e=>{
- e.preventDefault();
-
- const id=$('payment-person').value;
- const amount=Number($('payment-amount').value);
- const note=$('payment-note').value.trim();
- const p=state.people.find(x=>x.id===id);
-
- if(!p||!Number.isFinite(amount)||amount<=0)return;
-
- const a=account(selectedMonth,id);
- a.paid=(Number(a.paid)||0)+amount;
- a.payments=a.payments||[];
- a.payments.push({amount,note,time:stamp()});
-
- log(selectedMonth,`تم استلام ${money(amount)} من ${p.name}${note?' — '+note:''}.`);
-
- $('payment-status').textContent=`تم تسجيل دفعة ${money(amount)} من ${p.name} لشهر ${selectedMonth}.`;
- $('payment-status').classList.remove('hidden');
-
- e.target.reset();
- save();
-});
-
-$('month-picker').addEventListener('change',()=>{
- if($('month-picker').value){
-  selectedMonth=$('month-picker').value;
-  render();
- }
-});
-
-$('next-month').addEventListener('click',()=>{
- const [y,m]=selectedMonth.split('-').map(Number);
- selectedMonth=monthKey(new Date(y,m,1));
- render();
-});
-
-$('export-pdf').addEventListener('click',()=>{
- if(typeof html2pdf==='undefined'){
-  window.print();
-  return;
- }
-
- document.querySelectorAll('.person-details').forEach(x=>x.classList.remove('hidden'));
-
- const opt={
-  margin:8,
-  filename:`كشف-المواصلات-${selectedMonth}.pdf`,
-  image:{type:'jpeg',quality:.98},
-  html2canvas:{scale:2,useCORS:true},
-  jsPDF:{unit:'mm',format:'a4',orientation:'portrait'},
-  pagebreak:{mode:['css','legacy']}
- };
-
- html2pdf().set(opt).from($('invoice-content')).save().then(()=>render());
-});
-
-$('export-data').addEventListener('click',()=>{
- const blob=new Blob([JSON.stringify(state,null,2)],{type:'application/json'});
- const url=URL.createObjectURL(blob);
- const a=document.createElement('a');
- a.href=url;
- a.download=`carpool-backup-${new Date().toISOString().slice(0,10)}.json`;
- a.click();
- URL.revokeObjectURL(url);
-});
-
-$('import-data-btn').addEventListener('click',()=>$('import-data').click());
-
-$('import-data').addEventListener('change',async e=>{
- const file=e.target.files[0];
- if(!file)return;
-
- try{
-  const d=JSON.parse(await file.text());
-
-  if(!d||!Array.isArray(d.people)||!d.accounts||!Array.isArray(d.logs))throw Error();
-
-  if(!confirm('سيتم استبدال البيانات الحالية بالنسخة المستوردة. متابعة؟'))return;
-
-  state=d;
-  save();
-  alert('تم استيراد النسخة الاحتياطية.');
- }catch(err){
-  alert('تعذر قراءة الملف. اختر نسخة JSON صادرة من التطبيق.');
- }finally{
-  e.target.value='';
- }
-});
-
-$('cancel-add').addEventListener('click',()=>{
- $('add-panel').classList.add('hidden');
- $('add-person-toggle').setAttribute('aria-expanded','false');
-});
-
-$('add-person-toggle').addEventListener('click',()=>{
- const panel=$('add-panel');
- const opening=panel.classList.contains('hidden');
-
- panel.classList.toggle('hidden');
- $('add-person-toggle').setAttribute('aria-expanded',String(opening));
-
- if(opening)setTimeout(()=>$('person-name').focus(),50);
-});
-
-$('summary-toggle').addEventListener('click',()=>{
- const panel=$('summary-panel');
- const opening=panel.classList.contains('hidden');
-
- panel.classList.toggle('hidden');
- $('summary-toggle').setAttribute('aria-expanded',String(opening));
-});
-
-$('payment-toggle').addEventListener('click',()=>togglePanel('payment-panel','payment-toggle'));
-$('logs-toggle').addEventListener('click',()=>togglePanel('logs-panel','logs-toggle'));
-$('history-toggle').addEventListener('click',()=>togglePanel('history-panel','history-toggle'));
-
-function togglePanel(panelId,btnId){
- const panel=$(panelId);
- const btn=$(btnId);
- const opening=panel.classList.contains('hidden');
-
- panel.classList.toggle('hidden');
- btn.setAttribute('aria-expanded',String(opening));
-}
-
-// استيراد بيانات النسخة القديمة إن وجدت
-try{
- if(!localStorage.getItem(KEY)){
-  const old=JSON.parse(localStorage.getItem('carpool_users')||'[]');
-  const oldLogs=JSON.parse(localStorage.getItem('carpool_logs')||'[]');
-
-  old.forEach((u,i)=>{
-   const p={
-    id:'legacy-'+i+'-'+Date.now(),
-    name:String(u.name||'راكب'),
-    tripPrice:Number(u.tripPrice??u.cost)||0,
-    goTime:'',
-    returnTime:''
-   };
-
-   state.people.push(p);
-
-   const a=account(currentMonth,p.id);
-   a.goes=Number(u.goes)||0;
-   a.returns=Number(u.returns)||0;
+  const total=sumMonth(selectedMonth);
+  $("total").textContent=money(total.fee);
+  $("paid").textContent=money(total.paid);
+  $("due").textContent=money(total.fee-total.paid);
+
+  let allDue=0;
+  Object.values(state.accounts).forEach(a=>{
+    allDue+=Math.max(0,getCost(a)-getPaid(a));
+  });
+  $("allDue").textContent=money(allDue);
+
+  const people=$("people");
+  people.innerHTML="";
+  $("empty").classList.toggle("hidden",state.people.length>0);
+
+  state.people.forEach(p=>{
+    const a=account(selectedMonth,p.id);
+    const trips=a.trips||[];
+    const due=getCost(a)-getPaid(a);
+    const el=document.createElement("div");
+    el.className="person";
+    el.innerHTML=`
+      <h3>${esc(p.name)}</h3>
+      <div class="muted">
+        موعد الذهاب: ${esc(p.goTime||"غير محدد")} |
+        موعد العودة: ${esc(p.backTime||"غير محدد")}<br>
+        السعر الشهري: <strong>${money(getCost(a))}</strong> |
+        عدد الرحلات المسجلة: <strong>${trips.length}</strong><br>
+        المدفوع: <strong>${money(getPaid(a))}</strong> |
+        المتبقي: <strong>${money(due)}</strong><br>
+        <span class="badge ${due>0?"due":""}">${due>0?"يوجد مبلغ مستحق":"الحساب مسدد"}</span>
+      </div>
+      <div class="actions">
+        <button data-action="go" data-id="${p.id}">🚗 تسجيل ذهاب</button>
+        <button data-action="back" data-id="${p.id}">🏠 تسجيل عودة</button>
+        <button class="secondary" data-action="undo" data-id="${p.id}">تراجع عن آخر رحلة</button>
+        <button class="green" data-action="invoice" data-id="${p.id}">🧾 فاتورة الراكب</button>
+        <button class="secondary" data-action="fee" data-id="${p.id}">تعديل السعر</button>
+        <button class="secondary" data-action="edit" data-id="${p.id}">تعديل البيانات</button>
+        <button class="red" data-action="delete" data-id="${p.id}">حذف الراكب</button>
+      </div>`;
+    people.appendChild(el);
   });
 
-  state.logs=oldLogs.map(s=>({month:currentMonth,text:String(s),time:''}));
+  const sel=$("paymentPerson");
+  const old=sel.value;
+  sel.innerHTML=state.people.map(p=>`<option value="${p.id}">${esc(p.name)}</option>`).join("");
+  if(state.people.some(p=>p.id===old))sel.value=old;
 
-  if(old.length)localStorage.setItem(KEY,JSON.stringify(state));
- }
-}catch(e){}
+  const months=[...new Set(Object.values(state.accounts).map(a=>a.month))].sort().reverse();
+  $("history").innerHTML=months.map(m=>{
+    const s=sumMonth(m);
+    return `<tr><td>${esc(m)}</td><td>${money(s.fee)}</td><td>${money(s.paid)}</td><td>${money(s.fee-s.paid)}</td></tr>`;
+  }).join("")||'<tr><td colspan="4">لا توجد حسابات سابقة.</td></tr>';
 
+  const logs=state.logs.filter(l=>l.month===selectedMonth);
+  $("logs").innerHTML=logs.length?logs.slice(0,30).map(l=>
+    `<div style="padding:7px 0;border-bottom:1px solid #eee">${esc(l.text)}<br><small>${esc(l.time||"")}</small></div>`
+  ).join(""):"لا يوجد نشاط مسجل لهذا الشهر.";
+}
 render();
 })();
 </script>
