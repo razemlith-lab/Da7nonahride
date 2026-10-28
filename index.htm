@@ -4,95 +4,143 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>تطبيق تتبع رحلات العمل (Carpooling)</title>
+    <!-- استدعاء مكتبة توليد الـ PDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <style>
         :root {
-            --primary-color: #4f46e5;
-            --secondary-color: #e0e7ff;
-            --bg-color: #f8fafc;
-            --text-color: #1e293b;
-            --danger-color: #ef4444;
-            --success-color: #22c55e;
+            --primary: #6366f1;
+            --primary-hover: #4f46e5;
+            --bg: #0f172a;
+            --card-bg: #ffffff;
+            --text: #1e293b;
+            --text-light: #64748b;
+            --danger: #ef4444;
+            --danger-hover: #dc2626;
+            --success: #22c55e;
+            --border: #e2e8f0;
         }
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-color);
+            background-color: #f8fafc;
+            color: var(--text);
             margin: 0;
             padding: 20px;
         }
         .container {
-            max-width: 900px;
+            max-width: 950px;
             margin: 0 auto;
-            background: white;
-            padding: 25px;
-            border-radius: 12px;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            background: var(--card-bg);
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -4px rgba(0, 0, 0, 0.05);
         }
-        h1, h2 {
+        h1 {
             text-align: center;
-            color: var(--primary-color);
+            color: var(--primary);
+            margin-bottom: 30px;
+            font-size: 26px;
+        }
+        h2 {
+            color: #334155;
+            font-size: 18px;
+            margin-bottom: 15px;
+            border-bottom: 2px solid #f1f5f9;
+            padding-bottom: 8px;
         }
         .section {
-            margin-bottom: 25px;
-            padding: 15px;
-            border: 1px solid #e2e8f0;
-            border-radius: 8px;
+            margin-bottom: 30px;
+            padding: 20px;
+            border: 1px solid var(--border);
+            border-radius: 12px;
             background: #fff;
         }
-        form input, form button {
-            padding: 10px;
-            margin: 5px;
-            border: 1px solid #cbd5e1;
-            border-radius: 6px;
-            font-size: 16px;
+        form {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
         }
         form input {
-            width: calc(33% - 20px);
+            flex: 1;
+            min-width: 200px;
+            padding: 12px 16px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 15px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        form input:focus {
+            border-color: var(--primary);
         }
         button {
-            background-color: var(--primary-color);
+            padding: 12px 20px;
+            background-color: var(--primary);
             color: white;
             border: none;
+            border-radius: 8px;
             cursor: pointer;
-            transition: background 0.2s;
+            font-weight: 600;
+            font-size: 15px;
+            transition: background 0.2s, transform 0.1s;
         }
         button:hover {
-            background-color: #4338ca;
+            background-color: var(--primary-hover);
+        }
+        button:active {
+            transform: scale(0.98);
         }
         .btn-danger {
-            background-color: var(--danger-color);
+            background-color: var(--danger);
         }
         .btn-danger:hover {
-            background-color: #dc2626;
+            background-color: var(--danger-hover);
         }
         table {
             width: 100%;
             border-collapse: collapse;
             margin-top: 15px;
+            overflow: hidden;
+            border-radius: 8px;
         }
         th, td {
-            border: 1px solid #e2e8f0;
-            padding: 12px;
+            border: 1px solid var(--border);
+            padding: 14px;
             text-align: center;
+            font-size: 14px;
         }
         th {
-            background-color: var(--secondary-color);
-            color: var(--text-color);
+            background-color: #f1f5f9;
+            color: #475569;
+            font-weight: 600;
+        }
+        tr:nth-child(even) {
+            background-color: #fcfcfc;
         }
         .actions-cell button {
-            padding: 6px 12px;
+            padding: 6px 10px;
             margin: 2px;
-            font-size: 14px;
+            font-size: 13px;
+        }
+        .logs-container {
+            max-height: 180px;
+            overflow-y: auto;
+            font-size: 13px;
+            color: var(--text-light);
+            background: #f8fafc;
+            padding: 10px;
+            border-radius: 8px;
+            margin-top: 10px;
+            text-align: right;
         }
         .reset-section {
             text-align: center;
-            margin-top: 30px;
+            margin-top: 25px;
         }
     </style>
 </head>
 <body>
 
-<div class="container">
+<div class="container" id="invoice-content">
     <h1>تطبيق تتبع رحلات العمل (Carpooling)</h1>
 
     <!-- قسم إضافة شخص جديد -->
@@ -100,7 +148,7 @@
         <h2>إضافة مشارك جديد</h2>
         <form id="add-person-form">
             <input type="text" id="person-name" placeholder="اسم الزميل" required>
-            <input type="number" id="trip-cost" placeholder="تلفة الرحلة الواحدة (د.أ)" required step="0.5">
+            <input type="number" id="trip-cost" placeholder="تكلفة الرحلة الواحدة (د.أ)" required step="0.5">
             <button type="submit">إضافة الشخص</button>
         </form>
     </div>
@@ -118,51 +166,41 @@
                     <th>الإجمالي المستحق</th>
                     <th>إجراءات تسجيل الرحلات</th>
                 </tr>
-            зня>
+            </thead>
             <tbody id="users-table-body">
                 <!-- سيتم تعبئة البيانات ديناميكياً -->
             </tbody>
         </table>
     </div>
 
-    <!-- زر تصفير الحسابات وبدء شهر جديد -->
+    <!-- سجل الأنشطة والتواريخ -->
+    <div class="section">
+        <h2>سجل التواريخ والرحلات المسجلة</h2>
+        <div id="activity-logs" class="logs-container">
+            لم يتم تسجيل أي رحلات بعد.
+        </div>
+    </div>
+
+    <!-- زر إصدار الفاتورة وتصفير الحسابات -->
     <div class="reset-section">
-        <button id="reset-month-btn" class="btn-danger">إصدار الفاتورة وتصفير الشهر وبدء جديد</button>
+        <button id="reset-month-btn" class="btn-danger">إصدار فاتورة PDF وتصفير الشهر</button>
     </div>
 </div>
 
-<!-- كود جافاسكريبت للتشغيل وربط Firebase -->
 <script type="module">
-    // 1. ضع هنا كود إعداد الـ Firebase SDK الذي نسخته من لوحة التحكم:
-    /*
-    import { initializeApp } from "firebase/app";
-    import { getDatabase, ref, set, get, update, remove } from "firebase/database";
-
-    const firebaseConfig = {
-      apiKey: "YOUR_API_KEY",
-      authDomain: "YOUR_AUTH_DOMAIN",
-      projectId: "YOUR_PROJECT_ID",
-      storageBucket: "YOUR_STORAGE_BUCKET",
-      messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-      appId: "YOUR_APP_ID"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const db = getDatabase(app);
-    */
-
-    // ملاحظة: حالياً سنقوم بتشغيل التطبيق محلياً بالذاكرة المؤقتة (LocalStorage) 
-    // كخطوة أولى سريعة، ويمكننا ربطه بـ Firebase مباشرة عبر لصق الكود أعلاه بدلاً من localStorage.
-
     let users = JSON.parse(localStorage.getItem('carpool_users')) || [];
+    let logs = JSON.parse(localStorage.getItem('carpool_logs')) || [];
 
     const form = document.getElementById('add-person-form');
     const tableBody = document.getElementById('users-table-body');
     const resetBtn = document.getElementById('reset-month-btn');
+    const logsContainer = document.getElementById('activity-logs');
 
     function saveAndRender() {
         localStorage.setItem('carpool_users', JSON.stringify(users));
+        localStorage.setItem('carpool_logs', JSON.stringify(logs));
         renderTable();
+        renderLogs();
     }
 
     function renderTable() {
@@ -176,7 +214,7 @@
             const totalCost = (user.goes + user.returns) * user.cost;
             const tr = document.createElement('tr');
             tr.innerHTML = `
-                <td>${user.name}</td>
+                <td><strong>${user.name}</strong></td>
                 <td>${user.cost} د.أ</td>
                 <td>
                     ${user.goes} 
@@ -188,7 +226,7 @@
                     <button onclick="updateCount(${index}, 'returns', 1)">+</button>
                     <button onclick="updateCount(${index}, 'returns', -1)">-</button>
                 </td>
-                <td><strong>${totalCost} د.أ</strong></td>
+                <td><strong style="color: var(--primary);">${totalCost} د.أ</strong></td>
                 <td class="actions-cell">
                     <button onclick="deleteUser(${index})" class="btn-danger">حذف</button>
                 </td>
@@ -197,27 +235,39 @@
         });
     }
 
+    function renderLogs() {
+        if (logs.length === 0) {
+            logsContainer.innerHTML = 'لم يتم تسجيل أي رحلات بعد.';
+            return;
+        }
+        logsContainer.innerHTML = logs.map(log => `<div>• ${log}</div>`).join('');
+    }
+
     // إضافة شخص جديد
     form.addEventListener('submit', (e) => {
         e.preventDefault();
         const name = document.getElementById('person-name').value;
         const cost = parseFloat(document.getElementById('trip-cost').value);
 
-        users.push({
-            name: name,
-            cost: cost,
-            goes: 0,
-            returns: 0
-        });
-
+        users.push({ name, cost, goes: 0, returns: 0 });
         form.reset();
         saveAndRender();
     });
 
-    // تحديث عدد الرحلات (ذهاب أو عودة)
+    // تحديث عدد الرحلات مع حفظ التاريخ والوقت تلقائياً
     window.updateCount = function(index, type, delta) {
-        users[index][type] += delta;
-        if (users[index][type] < 0) users[index][type] = 0;
+        if (delta > 0) {
+            users[index][type] += 1;
+            const now = new Date();
+            const dateStr = now.toLocaleDateString('ar-JO');
+            const timeStr = now.toLocaleTimeString('ar-JO', { hour: '2-digit', minute: '2-digit' });
+            const typeText = type === 'goes' ? 'رحلة ذهاب' : 'رحلة عودة';
+            logs.unshift(`تم تسجيل ${typeText} لـ ${<span>users[index].name</span>} بتاريخ ${dateStr} الساعة ${timeStr}`);
+        } else {
+            if (users[index][type] > 0) {
+                users[index][type] -= 1;
+            }
+        }
         saveAndRender();
     }
 
@@ -229,22 +279,35 @@
         }
     }
 
-    // زر تصفير الشهر وبدء جديد عند إصدار الفاتورة
+    // إصدار فاتورة PDF وتصفير الحسابات
     resetBtn.addEventListener('click', () => {
-        if(confirm('هل تريد حقاً إصدار الفاتورة وتصفير عداد الرحلات لبدء شهر جديد؟')) {
-            users.forEach(user => {
-                user.goes = 0;
-                user.returns = 0;
+        if(confirm('هل تريد إصدار الفاتورة بصيغة PDF وتصفير عداد الرحلات لبدء شهر جديد؟')) {
+            const element = document.getElementById('invoice-content');
+            const opt = {
+                margin:       10,
+                filename:     `carpool-invoice-${new Date().toLocaleDateString('en-GB')}.pdf`,
+                image:        { type: 'jpeg', quality: 0.98 },
+                html2canvas:  { scale: 2 },
+                jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            };
+
+            // توليد وتحميل ملف الـ PDF
+            html2pdf().from(element).set(opt).save().then(() => {
+                // تصفير البيانات بعد تحميل الفاتورة
+                users.forEach(user => {
+                    user.goes = 0;
+                    user.returns = 0;
+                });
+                logs = [];
+                saveAndRender();
+                alert('تم إصدار الفاتورة وتصفير الرحلات بنجاح لبدء شهر جديد!');
             });
-            saveAndRender();
-            alert('تمت تصفير الرحلات بنجاح، جاهزون لشهر جديد!');
         }
     });
 
-    // العرض الأول عند تحميل الصفحة
     renderTable();
+    renderLogs();
 </script>
 
 </body>
-  </html>
-  
+</html>
